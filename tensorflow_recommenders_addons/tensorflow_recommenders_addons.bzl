@@ -85,7 +85,9 @@ def custom_op_library(
 
     if rocm_srcs:
         copts = copts + if_rocm(["-DTENSORFLOW_USE_ROCM=1"])
-        rocm_copts = copts
+        rocm_copts = copts + if_rocm_is_configured([
+            "-x rocm",
+        ])
         rocm_deps = deps + if_rocm_is_configured(rocm_deps) + if_rocm_is_configured([
             "@local_config_rocm//rocm:rocm_headers",
             "@local_config_rocm//rocm:hip",
