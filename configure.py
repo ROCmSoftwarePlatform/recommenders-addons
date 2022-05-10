@@ -284,7 +284,7 @@ def configure_rocm():
 
   write("test --config=rocm")
   write("build --config=rocm")
-  write("build:rocm --define=using_rocm_hipcc=true")
+  write("build:rocm --define=using_rocm=true --define=using_rocm_hipcc=true")
   write("build:rocm --define=tensorflow_mkldnn_contraction_kernel=0")
   write("build:rocm --repo_env TF_NEED_ROCM=1")
   write("build:rocm --crosstool_top=@local_config_rocm//crosstool:toolchain")
