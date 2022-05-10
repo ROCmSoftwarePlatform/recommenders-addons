@@ -10,12 +10,20 @@ load(
     "if_cuda_is_configured",
 )
 
+load(
+    "@local_config_rocm//rocm:build_defs.bzl",
+    "if_rocm",
+    "if_rocm_is_configured",
+)
+
 def custom_op_library(
         name,
         srcs = [],
         cuda_srcs = [],
+        rocm_srcs = [],
         deps = [],
         cuda_deps = [],
+        rocm_deps = [],
         copts = [],
         **kwargs):
     if FOR_TF_SERVING == "1":
@@ -74,6 +82,27 @@ def custom_op_library(
             **kwargs
         )
         deps = deps + if_cuda_is_configured([":" + basename + "_gpu"])
+
+    if rocm_srcs:
+        copts = copts + if_rocm(["-DTENSORFLOW_USE_ROCM=1"])
+        rocm_copts = copts + if_rocm_is_configured([
+            "-x rocm",
+            "-std=c++14",
+        ])
+        rocm_deps = deps + if_rocm_is_configured(rocm_deps) + if_rocm_is_configured([
+            "@local_config_rocm//rocm:rocm_headers",
+            "@local_config_rocm//rocm:hip",
+        ])
+        basename = name.split(".")[0]
+        native.cc_library(
+            name = basename + "_rocm",
+            srcs = rocm_srcs,
+            deps = rocm_deps,
+            copts = rocm_copts,
+            alwayslink = 1,
+            **kwargs
+        )
+        deps = deps + if_rocm_is_configured([":" + basename + "_rocm"])
 
     if FOR_TF_SERVING == "1":
         native.cc_library(
