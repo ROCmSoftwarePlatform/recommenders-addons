@@ -342,6 +342,7 @@ def _find_libs(repository_ctx, rocm_config, hipfft_or_rocfft, bash_bin):
             ("amdhip64", rocm_config.rocm_toolkit_path + "/hip"),
             ("rocblas", rocm_config.rocm_toolkit_path + "/rocblas"),
             (hipfft_or_rocfft, rocm_config.rocm_toolkit_path + "/" + hipfft_or_rocfft),
+            # ("hiprand", rocm_config.rocm_toolkit_path + "/hiprand"),
             ("MIOpen", rocm_config.rocm_toolkit_path + "/miopen"),
             ("rccl", rocm_config.rocm_toolkit_path + "/rccl"),
             ("hipsparse", rocm_config.rocm_toolkit_path + "/hipsparse"),
@@ -471,6 +472,7 @@ def _create_dummy_repository(repository_ctx):
             "%{rccl_lib}": _lib_name("rccl"),
             "%{hipfft_or_rocfft}": "hipfft",
             "%{hipfft_or_rocfft_lib}": _lib_name("hipfft"),
+            # "%{hiprand_lib}": _lib_name("hiprand"),
             "%{hipsparse_lib}": _lib_name("hipsparse"),
             "%{roctracer_lib}": _lib_name("roctracer64"),
             "%{rocsolver_lib}": _lib_name("rocsolver"),
@@ -660,6 +662,7 @@ def _create_local_rocm_repository(repository_ctx):
         ],
     ))
 
+
     # Set up BUILD file for rocm/
     repository_ctx.template(
         "rocm/build_defs.bzl",
@@ -681,6 +684,7 @@ def _create_local_rocm_repository(repository_ctx):
             "%{rocblas_lib}": rocm_libs["rocblas"].file_name,
             "%{hipfft_or_rocfft}": hipfft_or_rocfft,
             "%{hipfft_or_rocfft_lib}": rocm_libs[hipfft_or_rocfft].file_name,
+            # "%{hiprand_lib}": rocm_libs["hiprand"].file_name,
             "%{miopen_lib}": rocm_libs["MIOpen"].file_name,
             "%{rccl_lib}": rocm_libs["rccl"].file_name,
             "%{hipsparse_lib}": rocm_libs["hipsparse"].file_name,
@@ -698,6 +702,7 @@ def _create_local_rocm_repository(repository_ctx):
                                 '":rocsolver-include"'),
         },
     )
+
     # Set up crosstool/
 
     cc = find_cc(repository_ctx)
@@ -732,6 +737,7 @@ def _create_local_rocm_repository(repository_ctx):
     )
 
     verify_build_defines(rocm_defines)
+
     # Only expand template variables in the BUILD file
     repository_ctx.template(
         "crosstool/BUILD",
