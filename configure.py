@@ -25,7 +25,7 @@ import tensorflow as tf
 _TFRA_BAZELRC = ".bazelrc"
 
 # Maping TensorFlow version to valid Bazel version.
-_VALID_BAZEL_VERSION = {"1.15.2": "0.26.1", "2.4.1": "3.1.0"}
+_VALID_BAZEL_VERSION = {"1.15.2": "0.26.1", "2.4.3": "3.1.0"}
 
 
 # Writes variables to bazelrc file
@@ -202,8 +202,11 @@ def create_build_configuration():
     write("build --copt=-mavx")
 
   if os.getenv("TF_NEED_CUDA", "0") == "1":
-    print("> Building GPU & CPU ops")
+    print("> Building CUDA GPU & CPU ops")
     configure_cuda()
+  elif os.getenv("TF_NEED_ROCM", "0") == "1":
+    print("> Building ROCM GPU & CPU ops")
+    configure_rocm()
   else:
     print("> Building only CPU ops")
 
@@ -227,6 +230,19 @@ def configure_cuda():
   write("build --config=cuda")
   write("build:cuda --define=using_cuda=true --define=using_cuda_nvcc=true")
   write("build:cuda --crosstool_top=@local_config_cuda//crosstool:toolchain")
+
+
+def configure_rocm():
+  write_action_env("TF_NEED_ROCM", "1")
+  write_action_env("ROCM_PATH",
+                   os.path.realpath(os.getenv("ROCM_PATH", "/opt/rocm")))
+
+  write("test --config=rocm")
+  write("build --config=rocm")
+  write("build:rocm --define=using_rocm=true --define=using_rocm_hipcc=true")
+  write("build:rocm --define=tensorflow_mkldnn_contraction_kernel=0")
+  write("build:rocm --repo_env TF_NEED_ROCM=1")
+  write("build:rocm --crosstool_top=@local_config_rocm//crosstool:toolchain")
 
 
 if __name__ == "__main__":
