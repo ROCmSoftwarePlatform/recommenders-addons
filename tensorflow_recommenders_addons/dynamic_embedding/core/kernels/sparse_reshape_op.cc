@@ -42,7 +42,7 @@ class SparseReshapeOp : public OpKernel {
   }
 };
 
-#if GOOGLE_CUDA
+#if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 REGISTER_KERNEL_BUILDER(Name("TfraSparseReshape").Device(DEVICE_GPU),
                         SparseReshapeOp<GPUDevice>);
 #endif  // GOOGLE_CUDA

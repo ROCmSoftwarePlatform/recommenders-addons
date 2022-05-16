@@ -28,7 +28,7 @@ struct SparseReshapeFunctor {
   void operator()(OpKernelContext* context);
 };
 
-#if GOOGLE_CUDA
+#if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 template <>
 struct SparseReshapeFunctor<Eigen::GpuDevice> {
   void operator()(OpKernelContext* context);

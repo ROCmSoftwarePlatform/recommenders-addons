@@ -48,7 +48,7 @@ limitations under the License.
 #include "tensorflow/core/common_runtime/gpu/gpu_event_mgr.h"
 #endif  // GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 
-#if GOOGLE_CUDA
+#if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 #if TF_VERSION_INTEGER >= 2040  // 2.4.0
 #include "tensorflow/core/util/cuda_solvers.h"
 #else

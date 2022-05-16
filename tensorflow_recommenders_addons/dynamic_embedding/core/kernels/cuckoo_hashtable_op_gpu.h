@@ -94,7 +94,7 @@ class HashTableGpuOp : public OpKernel {
 
     if (ctx->expected_output_dtype(0) == DT_RESOURCE) {
       Tensor* handle;
-#if GOOGLE_CUDA
+#if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
       AllocatorAttributes attr;
       attr.set_gpu_compatible(true);
       attr.set_on_host(true);

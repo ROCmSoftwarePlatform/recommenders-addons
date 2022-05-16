@@ -46,7 +46,7 @@ class SparseFillEmptyRowsOp : public OpKernel {
   }
 };
 
-#if GOOGLE_CUDA
+#if GOOGLE_CUDA || TENSORFLOW_USE_ROCM
 #define REGISTER_KERNELS(type)                            \
   REGISTER_KERNEL_BUILDER(Name("TfraSparseFillEmptyRows") \
                               .Device(DEVICE_GPU)         \
